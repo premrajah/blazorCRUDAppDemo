@@ -1,0 +1,26 @@
+﻿@page "/people/create"
+@inject HttpClient http
+
+<h3>Create</h3>
+
+@* Forms based on model *@
+<EditForm Model="@person" OnValidSubmit="@CreatePerson">
+    <DataAnnotationsValidator />
+    <div class="form-field">
+        <label>Name:</label>
+        <div>
+            <InputText @bind-Value="@person.Name" />
+            <ValidationMessage For="@(() => person.Name)" />
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    Person person = new Person();
+
+    async Task CreatePerson()
+    {
+        await http.PostJsonAsync("api/people", person);
+    }
+}
