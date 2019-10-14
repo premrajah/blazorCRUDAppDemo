@@ -10,30 +10,34 @@
 @if (people == null)
 {
     <p>Loading...</p>
-} else if( people.Length == 0)
+}
+else if (people.Length == 0)
 {
     <p>No records in the database</p>
-} else
+}
+else
 {
     <table class="table">
         <thead>
             <tr>
-                <th></th>
                 <th>Id</th>
                 <th>Name</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var person in people)
             {
-                <tr>
-                    <td>
-                        <a class="btn btn-success" href="people/edit/@person.Id">Edit</a>
-                        <button class="btn btn-danger">Delete</button>
-                    </td>
-                    <td>@person.Id</td>
-                    <td>@person.Name</td>
-                </tr>
+            <tr>
+
+                <td>@person.Id</td>
+                <td>@person.Name</td>
+                <td>
+                    <a class="btn btn-success" href="people/edit/@person.Id">Edit</a>
+                    @* Lambda expression to pass a parameter *@
+                    <button class="btn btn-danger" @onclick="@(() => DeletePerson(person.Id))">Delete</button>
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -50,6 +54,12 @@
     async Task LoadPeople()
     {
         people = await http.GetJsonAsync<Person[]>("api/people");
-     
+
+    }
+
+    async Task DeletePerson(int personId)
+    {
+        await http.DeleteAsync($"api/people/{personId}");
+        await LoadPeople();
     }
 }

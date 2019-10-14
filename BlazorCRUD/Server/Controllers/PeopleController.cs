@@ -50,7 +50,7 @@ namespace BlazorCRUD.Server.Controllers
             return NoContent();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             var person = new Person { Id = id };
