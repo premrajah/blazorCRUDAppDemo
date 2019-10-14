@@ -1,19 +1,11 @@
 ﻿@page "/people/create"
 @inject HttpClient http
+@inject Microsoft.AspNetCore.Components.NavigationManager navManager
+
 
 <h3>Create</h3>
 
-@* Forms based on model *@
-<EditForm Model="@person" OnValidSubmit="@CreatePerson">
-    <DataAnnotationsValidator />
-    <div class="form-field">
-        <label>Name:</label>
-        <div>
-            <InputText @bind-Value="@person.Name" />
-            <ValidationMessage For="@(() => person.Name)" />
-        </div>
-    </div>
-</EditForm>
+<PersonForm ButtonText="Create Person" Person="@person" OnValueSubmit="CreatePerson" />
 
 @code {
 
@@ -22,5 +14,6 @@
     async Task CreatePerson()
     {
         await http.PostJsonAsync("api/people", person);
+        navManager.NavigateTo("people");
     }
 }
