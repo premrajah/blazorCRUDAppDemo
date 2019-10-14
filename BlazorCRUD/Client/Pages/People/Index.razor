@@ -1,5 +1,6 @@
 ﻿@page "/people"
 @inject HttpClient http
+@inject IJSRuntime js
 
 <h3>People</h3>
 
@@ -28,16 +29,16 @@ else
         <tbody>
             @foreach (var person in people)
             {
-            <tr>
+                <tr>
 
-                <td>@person.Id</td>
-                <td>@person.Name</td>
-                <td>
-                    <a class="btn btn-success" href="people/edit/@person.Id">Edit</a>
-                    @* Lambda expression to pass a parameter *@
-                    <button class="btn btn-danger" @onclick="@(() => DeletePerson(person.Id))">Delete</button>
-                </td>
-            </tr>
+                    <td>@person.Id</td>
+                    <td>@person.Name</td>
+                    <td>
+                        <a class="btn btn-success" href="people/edit/@person.Id">Edit</a>
+                        @* Lambda expression to pass a parameter *@
+                        <button class="btn btn-danger" @onclick="@(() => DeletePerson(person.Id))">Delete</button>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
@@ -59,7 +60,16 @@ else
 
     async Task DeletePerson(int personId)
     {
-        await http.DeleteAsync($"api/people/{personId}");
-        await LoadPeople();
+
+        var personSelected = people.First(x => x.Id == personId);
+
+        // Using JS runtime
+        if (await js.InvokeAsync<bool>("confirm", $"Do you want to delete this person? {personSelected.Name}"))
+        {
+            await http.DeleteAsync($"api/people/{personId}");
+            await LoadPeople();
+        }
+
+
     }
 }
