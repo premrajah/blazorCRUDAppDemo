@@ -1,7 +1,57 @@
 ﻿@page "/people"
+@inject HttpClient http
 
-<h3>Index</h3>
+<h3>People</h3>
+
+@if (people == null)
+{
+    <p>Loading...</p>
+} else if( people.Length == 0)
+{
+    <p>No records in the database</p>
+} else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in people)
+            {
+                <tr>
+                    <td>
+                        <a class="btn btn-success">Edit</a>
+                        <button class="btn btn-danger">Delete</button>
+                    </td>
+                    <td>@person.Id</td>
+                    <td>@person.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    Person[] people { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPeople();
+    }
+
+    async Task LoadPeople()
+    {
+        people = await http.GetJsonAsync<Person[]>("api/people");
+        
+        // Test
+        people = new Person[]
+        {
+            new Person(){ Id = 1, Name = "James Bond"},
+            new Person(){ Id = 2, Name = "Lara Croft"},
+        };
+    }
 }
